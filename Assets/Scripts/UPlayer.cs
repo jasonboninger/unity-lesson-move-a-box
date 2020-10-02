@@ -1,52 +1,58 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
 	public class UPlayer : MonoBehaviour
 	{
-		public float speed;
-		public UTarget[] targets;
-
-		protected void Start()
-		{
-			for (int i = 0; i < targets.Length; i++)
-			{
-				var target = targets[i];
-
-				Debug.Log(target.name);
-
-			}
-		}
+		public float speedMovement;
+		public float speedRotation;
+		public List<UTarget> targets;
 
 		protected void Update()
+		{
+			// Move self
+			_MoveSelf();
+			// Destroy target
+			_DestroyTarget();
+		}
+
+		private void _MoveSelf()
 		{
 			var up = Input.GetKey(KeyCode.UpArrow);
 			if (up)
 			{
-				Vector3 position = transform.position;
-				position.z -= speed * Time.deltaTime;
-				transform.position = position;
+				transform.position += transform.forward * speedMovement * Time.deltaTime;
 			}
 			var down = Input.GetKey(KeyCode.DownArrow);
 			if (down)
 			{
-				Vector3 position = transform.position;
-				position.z += speed * Time.deltaTime;
-				transform.position = position;
+				transform.position -= transform.forward * speedMovement * Time.deltaTime;
 			}
 			var left = Input.GetKey(KeyCode.LeftArrow);
 			if (left)
 			{
-				Vector3 position = transform.position;
-				position.x += speed * Time.deltaTime;
-				transform.position = position;
+				transform.Rotate(new Vector3(0, -speedRotation * Time.deltaTime, 0));
 			}
 			var right = Input.GetKey(KeyCode.RightArrow);
 			if (right)
 			{
-				Vector3 position = transform.position;
-				position.x -= speed * Time.deltaTime;
-				transform.position = position;
+				transform.Rotate(new Vector3(0, speedRotation * Time.deltaTime, 0));
+			}
+		}
+
+		private void _DestroyTarget()
+		{
+			for (int i = 0; i < targets.Count; i++)
+			{
+				var target = targets[i];
+				var distance = Vector3.Distance(transform.position, target.transform.position);
+				if (distance <= 1)
+				{
+					Destroy(target.gameObject);
+					targets.Remove(target);
+					Debug.Log("TARGET DESTROYED!");
+				}
 			}
 		}
 	}
