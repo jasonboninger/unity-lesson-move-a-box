@@ -51,27 +51,17 @@ namespace Assets.Scripts
 				var distance = Vector3.Distance(transform.position, target.transform.position);
 				if (distance <= 5)
 				{
-					if (!_targetToCoroutineRunAwayMappings.ContainsKey(target))
+					if (!target.IsRunningAway())
 					{
-						var coroutineRunAway = StartCoroutine(target.RunAway(() => transform.position));
-						_targetToCoroutineRunAwayMappings.Add(target, coroutineRunAway);
+						target.StartRunningAway(() => transform.position);
 					}
 				}
 				else
 				{
-					if (_targetToCoroutineRunAwayMappings.ContainsKey(target))
-					{
-						StopCoroutine(_targetToCoroutineRunAwayMappings[target]);
-						_targetToCoroutineRunAwayMappings.Remove(target);
-					}
+					target.StopRunningAway();
 				}
 				if (distance <= 1)
 				{
-					if (_targetToCoroutineRunAwayMappings.ContainsKey(target))
-					{
-						StopCoroutine(_targetToCoroutineRunAwayMappings[target]);
-						_targetToCoroutineRunAwayMappings.Remove(target);
-					}
 					Destroy(target.gameObject);
 					targets.Remove(target);
 					Debug.Log("TARGET DESTROYED!");

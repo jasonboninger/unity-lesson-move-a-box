@@ -6,12 +6,33 @@ namespace Assets.Scripts
 {
 	public class UTarget : MonoBehaviour
 	{
+		private Coroutine _runningAway;
+
 		protected void Start()
 		{
 			StartCoroutine(_Hover());
 		}
 
-		public IEnumerator RunAway(Func<Vector3> getPosition)
+		public bool IsRunningAway()
+		{
+			return _runningAway != null;
+		}
+
+		public void StartRunningAway(Func<Vector3> getPosition)
+		{
+			StopRunningAway();
+			_runningAway = StartCoroutine(_RunAway(getPosition));
+		}
+
+		public void StopRunningAway()
+		{
+			if (IsRunningAway())
+			{
+				StopCoroutine(_runningAway);
+			}
+		}
+
+		private IEnumerator _RunAway(Func<Vector3> getPosition)
 		{
 			var speed = 1f;
 
