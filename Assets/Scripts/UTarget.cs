@@ -29,6 +29,7 @@ namespace Assets.Scripts
 			if (IsRunningAway())
 			{
 				StopCoroutine(_runningAway);
+				_runningAway = null;
 			}
 		}
 
