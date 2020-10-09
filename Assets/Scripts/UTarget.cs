@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -13,6 +9,25 @@ namespace Assets.Scripts
 		protected void Start()
 		{
 			StartCoroutine(_Hover());
+		}
+
+		public IEnumerator RunAway(Func<Vector3> getPosition)
+		{
+			var speed = 1f;
+
+			while (true)
+			{
+				var positionRunAwayFrom = getPosition();
+				var positionSelf = transform.position;
+
+				var direction = positionSelf - positionRunAwayFrom;
+				direction.y = 0;
+				direction.Normalize();
+				positionSelf += direction * speed * Time.deltaTime;
+				transform.position = positionSelf;
+
+				yield return null;
+			}
 		}
 
 		private IEnumerator _Hover()

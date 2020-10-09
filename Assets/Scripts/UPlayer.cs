@@ -8,6 +8,8 @@ namespace Assets.Scripts
 		public float speedMovement;
 		public float speedRotation;
 		public List<UTarget> targets;
+		
+		private readonly Dictionary<UTarget, Coroutine> _targetToCoroutineRunAwayMappings = new Dictionary<UTarget, Coroutine>();
 
 		protected void Update()
 		{
@@ -47,8 +49,29 @@ namespace Assets.Scripts
 			{
 				var target = targets[i];
 				var distance = Vector3.Distance(transform.position, target.transform.position);
+				if (distance <= 5)
+				{
+					if (!_targetToCoroutineRunAwayMappings.ContainsKey(target))
+					{
+						var coroutineRunAway = StartCoroutine(target.RunAway(() => transform.position));
+						_targetToCoroutineRunAwayMappings.Add(target, coroutineRunAway);
+					}
+				}
+				else
+				{
+					if (_targetToCoroutineRunAwayMappings.ContainsKey(target))
+					{
+						StopCoroutine(_targetToCoroutineRunAwayMappings[target]);
+						_targetToCoroutineRunAwayMappings.Remove(target);
+					}
+				}
 				if (distance <= 1)
 				{
+					if (_targetToCoroutineRunAwayMappings.ContainsKey(target))
+					{
+						StopCoroutine(_targetToCoroutineRunAwayMappings[target]);
+						_targetToCoroutineRunAwayMappings.Remove(target);
+					}
 					Destroy(target.gameObject);
 					targets.Remove(target);
 					Debug.Log("TARGET DESTROYED!");
