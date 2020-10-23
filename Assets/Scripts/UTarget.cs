@@ -6,7 +6,15 @@ namespace Assets.Scripts
 {
 	public class UTarget : MonoBehaviour
 	{
+		private float _speed;
 		private Coroutine _runningAway;
+
+		public UTarget Initialize(Vector3 position, float speed)
+		{
+			transform.position = position;
+			_speed = speed;
+			return this;
+		}
 
 		protected void Start()
 		{
@@ -35,8 +43,6 @@ namespace Assets.Scripts
 
 		private IEnumerator _RunAway(Func<Vector3> getPosition)
 		{
-			var speed = 1f;
-
 			while (true)
 			{
 				var positionRunAwayFrom = getPosition();
@@ -45,7 +51,7 @@ namespace Assets.Scripts
 				var direction = positionSelf - positionRunAwayFrom;
 				direction.y = 0;
 				direction.Normalize();
-				positionSelf += direction * speed * Time.deltaTime;
+				positionSelf += direction * _speed * Time.deltaTime;
 				transform.position = positionSelf;
 
 				yield return null;

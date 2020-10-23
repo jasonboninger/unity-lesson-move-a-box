@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -7,9 +8,27 @@ namespace Assets.Scripts
 	{
 		public float speedMovement;
 		public float speedRotation;
-		public List<UTarget> targets;
+		public int _targetCount;
+		public UTarget prefabTarget;
+		public Text text;
+
+		private int _targetsDestroyed;
 		
+		private readonly List<UTarget> _targets = new List<UTarget>();
 		private readonly Dictionary<UTarget, Coroutine> _targetToCoroutineRunAwayMappings = new Dictionary<UTarget, Coroutine>();
+
+		protected void Start()
+		{
+			text.text = "Targets Destroyed: " + _targetsDestroyed;
+			for (int i = 0; i < _targetCount; i++)
+			{
+				var position = Random.insideUnitSphere * 10;
+				position.y = 1;
+				var speed = Random.Range(0f, 5f);
+				var target = Instantiate(prefabTarget).Initialize(position, speed);
+				_targets.Add(target);
+			}
+		}
 
 		protected void Update()
 		{
@@ -45,9 +64,9 @@ namespace Assets.Scripts
 
 		private void _DestroyTarget()
 		{
-			for (int i = 0; i < targets.Count; i++)
+			for (int i = 0; i < _targets.Count; i++)
 			{
-				var target = targets[i];
+				var target = _targets[i];
 				var distance = Vector3.Distance(transform.position, target.transform.position);
 				if (distance <= 5)
 				{
@@ -63,8 +82,8 @@ namespace Assets.Scripts
 				if (distance <= 1)
 				{
 					Destroy(target.gameObject);
-					targets.Remove(target);
-					Debug.Log("TARGET DESTROYED!");
+					_targets.Remove(target);
+					text.text = "Targets Destroyed: " + ++_targetsDestroyed;
 				}
 			}
 		}
